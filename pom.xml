@@ -4,9 +4,6 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>de.otto.oauthtokenfilter</groupId>
-  <artifactId>oauth-token-filter</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <build>
     <plugins>
       <plugin>
@@ -17,8 +14,37 @@
           <target>8</target>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+          </execution>
+        </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+      </plugin>
     </plugins>
   </build>
+  <licenses>
+    <license>
+      <distribution>repo</distribution>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <groupId>de.otto.oauthtokenfilter</groupId>
+  <artifactId>oauth-token-filter</artifactId>
+  <name>OAuth-Token-Filter</name>
+  <packaging>jar</packaging>
+
+  <url>http://maven.apache.org</url>
+
+  <version>1.0</version>
   <dependencies>
     <dependency>
       <groupId>javax</groupId>
