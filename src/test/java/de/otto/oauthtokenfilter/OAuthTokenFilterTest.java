@@ -41,7 +41,7 @@ public class OAuthTokenFilterTest {
   private static final String DUMMY_PASSWORD = "dummyPassword";
   private static final String DUMMY_CLIENT_ID = "dummyClientId";
   private static final String DUMMY_CLIENT_SECRET = "dummyClientSecret";
-  private static final Long DUMMY_PRM_TOKEN_LIFETIME = 7200L;
+  private static final Long DUMMY_TOKEN_LIFETIME = 7200L;
   @Mock
   private Client client;
   @Mock
@@ -73,7 +73,7 @@ public class OAuthTokenFilterTest {
         .clientId(DUMMY_CLIENT_ID)
         .clientSecret(DUMMY_CLIENT_SECRET)
         .loginUrl(DUMMY_LOGIN_URL)
-        .tokenLifetime(DUMMY_PRM_TOKEN_LIFETIME)
+        .tokenLifetime(DUMMY_TOKEN_LIFETIME)
         .build();
   }
 

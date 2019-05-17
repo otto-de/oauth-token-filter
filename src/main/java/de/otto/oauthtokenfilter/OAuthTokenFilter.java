@@ -18,7 +18,7 @@ import lombok.Builder;
 @Builder
 public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilter {
 
-  private Long tokenLifetime;
+  private Long tokenLifetime; //In seconds, e.g. 3600L for one hour.
   private LocalDateTime accessTokenExpires;
   private Client client;
   private String username;

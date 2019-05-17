@@ -1,25 +1,27 @@
 # OAuthTokenFilter
 
 If you're working with a service that uses OAuth2 for authentication, 
-you can use the OAuthTokenFilter for automatic authentication.
-It filters your requests to that service, caches your OAuth-Token, 
-checks it for validity and refreshes it when necessary. 
+you can use the OAuthTokenFilter to automatically authenticate you.
+It filters your requests to that service, adds OAuth2-Tokens to your requests, caches them, 
+checks them for validity and refreshes them when necessary. 
 
 ## Installing / Getting started
 
 To include the OAuthTokenFilter in your project, simpy add it as a Maven Dependency. 
 
 ```shell
-<groupId>de.otto.oauthtokenfilter</groupId>
-  <artifactId>oauth-token-filter</artifactId>
-  <version>1.0</version>
+  <dependency>
+    <groupId>de.otto.oauthtokenfilter</groupId>
+    <artifactId>oauth-token-filter</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </dependency>
   ```
 
 ### Initial Configuration
 
 Upon using your ClientBuilder, call 
 ```shell
-import OAuthTokenFilter;
+import de.otto.oauthtokenfilter.OAuthTokenFilter;
 ...
 
 ClientBuilder.newBuilder()

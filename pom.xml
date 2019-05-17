@@ -4,6 +4,13 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <name>OAuth-Token-Filter</name>
+  <groupId>de.otto.oauthtokenfilter</groupId>
+  <artifactId>oauth-token-filter</artifactId>
+  <packaging>jar</packaging>
+
+  <url>https://github.com/TobiasWaslowski/oauth-token-filter</url>
+
   <build>
     <plugins>
       <plugin>
@@ -29,6 +36,7 @@
       </plugin>
     </plugins>
   </build>
+
   <licenses>
     <license>
       <distribution>repo</distribution>
@@ -37,12 +45,6 @@
     </license>
   </licenses>
 
-  <groupId>de.otto.oauthtokenfilter</groupId>
-  <artifactId>oauth-token-filter</artifactId>
-  <name>OAuth-Token-Filter</name>
-  <packaging>jar</packaging>
-
-  <url>http://maven.apache.org</url>
 
   <version>1.0</version>
   <dependencies>
@@ -80,6 +82,5 @@
       <version>1.0.4</version>
     </dependency>
   </dependencies>
-
-
+  
 </project>
