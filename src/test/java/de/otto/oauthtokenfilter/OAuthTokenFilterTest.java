@@ -73,7 +73,7 @@ public class OAuthTokenFilterTest {
         .clientId(DUMMY_CLIENT_ID)
         .clientSecret(DUMMY_CLIENT_SECRET)
         .loginUrl(DUMMY_LOGIN_URL)
-        .tokenLifetime(DUMMY_TOKEN_LIFETIME)
+        .tokenLifetimeInSeconds(DUMMY_TOKEN_LIFETIME)
         .build();
   }
 
