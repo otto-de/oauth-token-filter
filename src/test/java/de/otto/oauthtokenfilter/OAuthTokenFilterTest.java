@@ -8,7 +8,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
-import java.util.Arrays;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import javax.json.Json;
@@ -58,7 +59,7 @@ public class OAuthTokenFilterTest {
   private OAuthTokenFilter testee;
 
   private static Entry<String, List<String>> param(String name, String value) {
-    return new java.util.AbstractMap.SimpleEntry<>(name, Arrays.asList(value));
+    return new SimpleEntry<>(name, Collections.singletonList(value));
   }
 
   @Before
@@ -79,7 +80,7 @@ public class OAuthTokenFilterTest {
 
   @Test
   public void shouldGetOAuth2Token() {
-    given(response.readEntity(any(Class.class))).willReturn(DUMMY_JSON);
+    given(response.readEntity(JsonObject.class)).willReturn(DUMMY_JSON);
     String token = testee.getOAuth2Token();
 
     then(token).isEqualTo(DUMMY_TOKEN);
@@ -98,7 +99,7 @@ public class OAuthTokenFilterTest {
   public void shouldThrowExceptionOnResponseWithoutAccessToken() {
     JsonObject jsonWithoutAccessToken = createObjectBuilder()
         .add("dummy", "dummy").build();
-    given(response.readEntity(any(Class.class))).willReturn(jsonWithoutAccessToken);
+    given(response.readEntity(JsonObject.class)).willReturn(jsonWithoutAccessToken);
 
     Throwable throwable = catchThrowable(() -> testee.getOAuth2Token());
 
@@ -108,7 +109,7 @@ public class OAuthTokenFilterTest {
   @Test
   public void shouldThrowExceptionOnNoObjectResponse() {
     JsonObject emptyJsonObject = Json.createObjectBuilder().build();
-    given(response.readEntity(any(Class.class))).willReturn(emptyJsonObject);
+    given(response.readEntity(JsonObject.class)).willReturn(emptyJsonObject);
 
     Throwable throwable = catchThrowable(() -> testee.getOAuth2Token());
 
@@ -117,7 +118,7 @@ public class OAuthTokenFilterTest {
 
   @Test
   public void shouldReturnSameToken() {
-    given(response.readEntity(any(Class.class))).willReturn(DUMMY_JSON);
+    given(response.readEntity(JsonObject.class)).willReturn(DUMMY_JSON);
     String firstToken = testee.getOAuth2Token();
 
     String secondToken = testee.getOAuth2Token();
@@ -129,7 +130,7 @@ public class OAuthTokenFilterTest {
   public void shouldTriggerForceRefreshToken() {
     JsonObject newToken = createObjectBuilder()
         .add("access_token", "newtoken").build();
-    given(response.readEntity(any(Class.class))).willReturn(DUMMY_JSON, newToken);
+    given(response.readEntity(JsonObject.class)).willReturn(DUMMY_JSON, newToken);
     given(responseContext.getStatusInfo()).willReturn(UNAUTHORIZED);
     testee.getOAuth2Token();
 
