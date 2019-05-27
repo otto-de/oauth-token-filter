@@ -9,7 +9,21 @@
   <artifactId>oauth-token-filter</artifactId>
   <packaging>jar</packaging>
 
-  <url>https://github.com/TobiasWaslowski/oauth-token-filter</url>
+  <developers>
+    <developer>
+      <name>Tobias Waslowski</name>
+      <email>tobiaswaslowski@gmail.com</email>
+      <organization>OTTO</organization>
+      <organizationUrl>https://www.github.com/otto-de</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <url>https://github.com/otto-de/oauth-token-filter.git</url>
+  </scm>
+
+  <url>https://github.com/otto-de/oauth-token-filter</url>
+  <description>A OAuth Token Filter for JAX-RS clients</description>
 
   <build>
     <plugins>
@@ -82,5 +96,5 @@
       <version>1.0.4</version>
     </dependency>
   </dependencies>
-  
+
 </project>
