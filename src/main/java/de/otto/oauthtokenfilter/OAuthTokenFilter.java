@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseContext;
@@ -13,12 +14,15 @@ import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
-import lombok.Builder;
 
-@Builder
+/**
+ * Authorizes a JAX-RS client against a service using OAuth2.
+ * @author Tobias Waslowski
+ */
+
 public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilter {
 
-  private Long tokenLifetimeInSeconds;
+  private Optional<Long> tokenLifetimeInSeconds;
   private LocalDateTime accessTokenExpires;
   private Client client;
   private String username;
@@ -28,11 +32,21 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
   private String loginUrl;
   private String accessToken;
 
+  /**
+   * Filters outgoing requests, adding an OAuth2-Token to the header.
+   * @param requestContext The request context.
+   */
   @Override
   public void filter(ClientRequestContext requestContext) {
     requestContext.getHeaders().add("Authorization", "Bearer " + getOAuth2Token());
   }
 
+  /**
+   * Filters the service's responses; if the service responds with a 401 UNAUTHORIZED,
+   * e.g. because the session was manually reset, the access token is reset.
+   * @param requestContext The request context; not used in this function.
+   * @param responseContext The service's response context, including the Reponse code.
+   */
   @Override
   public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {
     Response.StatusType statusInfo = responseContext.getStatusInfo();
@@ -41,7 +55,15 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
     }
   }
 
-  String getOAuth2Token() {
+  /**
+   * A Builder function for the OAuthTokenFilter.
+   * @return An instance of the static inner class OAuthTokenFilterBuilder.
+   */
+  public static OAuthTokenFilterBuilder builder() {
+    return new OAuthTokenFilterBuilder();
+  }
+
+  private String getOAuth2Token() {
     if (isTokenValid()) {
       return accessToken;
     } else {
@@ -52,7 +74,7 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
       form.param("client_id", clientId);
       form.param("client_secret", clientSecret);
 
-      LocalDateTime timestamp = LocalDateTime.now().plusSeconds(tokenLifetimeInSeconds);
+      LocalDateTime timestamp = LocalDateTime.now().plusSeconds(tokenLifetimeInSeconds.orElse(0L));
 
       Response response = client.target(loginUrl)
           .request()
@@ -74,4 +96,57 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
   private void forceRefreshToken() {
     accessTokenExpires = LocalDateTime.now();
   }
+
+  /**
+   * A Builder class for the OAuthTokenFilter.
+   * The tokenLifeTimeInSeconds field is not required if your OAuth2-Tokens come with the
+   * "expires_in" field. If neither tokenLifeTimeInSeconds nor "expires_in" is provided,
+   * your tokens will always expire after one usage.
+   * You can also decide to pass your own client to the class; if you don't,
+   * it will be generated for you in the build() function.
+   */
+
+  public static class OAuthTokenFilterBuilder {
+    private OAuthTokenFilter filter = new OAuthTokenFilter();
+
+    public OAuthTokenFilterBuilder username (String username) {
+      filter.username = username;
+      return this;
+    }
+
+    public OAuthTokenFilterBuilder password (String password) {
+      filter.password = password;
+      return this;
+    }
+
+    public OAuthTokenFilterBuilder clientId (String clientId) {
+      filter.clientId = clientId;
+      return this;
+    }
+
+    public OAuthTokenFilterBuilder clientSecret (String clientSecret) {
+      filter.clientSecret = clientSecret;
+      return this;
+    }
+
+    public OAuthTokenFilterBuilder loginUrl (String loginUrl) {
+      filter.loginUrl = loginUrl;
+      return this;
+    }
+
+    public OAuthTokenFilterBuilder tokenLifetimeInSeconds (Long tokenLifetimeInSeconds) {
+      filter.tokenLifetimeInSeconds = Optional.ofNullable(tokenLifetimeInSeconds);
+      return this;
+    }
+
+    public OAuthTokenFilterBuilder client (Client client) {
+      filter.client = client;
+      return this;
+    }
+
+    public OAuthTokenFilter build() {
+      return filter;
+    }
+  }
 }
+
