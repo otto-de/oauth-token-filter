@@ -9,8 +9,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
+import de.otto.oauthtokenfilter.OAuthTokenFilter.AccessTokenNotAvailableException;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.BDDMockito;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -84,7 +85,7 @@ public class OAuthTokenFilterTest {
 
     testee.filter(requestContext);
 
-    verify(headers).add(eq("Authorization"), authHeader.capture());
+    BDDMockito.then(headers).should().add(eq("Authorization"), authHeader.capture());
     then(authHeader.getValue()).isEqualTo("Bearer " + DUMMY_ACCESS_TOKEN);
   }
 
@@ -117,8 +118,8 @@ public class OAuthTokenFilterTest {
 
     testee.filter(requestContext);
 
-    verify(headers, times(2)).add(eq("Authorization"), authHeader.capture());
-    then(authHeader.getAllValues().stream().distinct().count()).isEqualTo(1);
+    BDDMockito.then(headers).should(times(2)).add(eq("Authorization"), authHeader.capture());
+    then(authHeader.getAllValues()).allMatch(i -> ("Bearer " + DUMMY_ACCESS_TOKEN).equals(i));
   }
 
   @Test
@@ -133,8 +134,8 @@ public class OAuthTokenFilterTest {
     invalidateToken();
     testee.filter(requestContext); //Gets a fresh token
 
-    verify(headers, times(2)).add(eq("Authorization"), authHeader.capture());
-    then(authHeader.getAllValues().get(1)).isEqualTo("Bearer newtoken");
+    BDDMockito.then(headers).should(times(2)).add(eq("Authorization"), authHeader.capture());
+    then(authHeader.getValue()).isEqualTo("Bearer newtoken");
   }
 
   private void invalidateToken() {
@@ -153,7 +154,7 @@ public class OAuthTokenFilterTest {
 
     testee.filter(requestContext);
 
-    verify(headers, times(2)).add(eq("Authorization"), authHeader.capture());
+    BDDMockito.then(headers).should(times(2)).add(eq("Authorization"), authHeader.capture());
     then(authHeader.getAllValues()).allMatch(token -> token.equals("Bearer newtoken"));
   }
 }

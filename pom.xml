@@ -4,9 +4,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <name>OAuth-Token-Filter</name>
+  <name>${project.groupId}:${project.artifactId}</name>
   <groupId>de.otto.oauthtokenfilter</groupId>
   <artifactId>oauth-token-filter</artifactId>
+  <version>1.0</version>
   <packaging>jar</packaging>
 
   <developers>
@@ -19,7 +20,7 @@
   </developers>
 
   <scm>
-    <url>https://github.com/otto-de/oauth-token-filter.git</url>
+    <url>https://github.com/otto-de/oauth-token-filter/tree/master/</url>
     <connection>scm:git:https://github.com/otto-de/oauth-token-filter.git</connection>
     <developerConnection>scm:git:https://github.com/otto-de/oauth-token-filter.git</developerConnection>
   </scm>
@@ -38,17 +39,18 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.5</version>
         <executions>
           <execution>
+            <id>sign-artifacts</id>
+            <phase>package</phase>
             <goals>
               <goal>sign</goal>
             </goals>
-            <phase>package</phase>
-            <id>sign-artifacts</id>
           </execution>
         </executions>
-        <groupId>org.apache.maven.plugins</groupId>
       </plugin>
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
@@ -67,6 +69,7 @@
         <version>2.2.1</version>
         <executions>
           <execution>
+            <phase>compile</phase>
             <id>attach-sources</id>
             <goals>
               <goal>jar-no-fork</goal>
@@ -81,6 +84,7 @@
         <executions>
           <execution>
             <id>attach-javadocs</id>
+            <phase>compile</phase>
             <goals>
               <goal>jar</goal>
             </goals>
@@ -109,18 +113,16 @@
     </license>
   </licenses>
 
-
-  <version>1.0</version>
   <dependencies>
     <dependency>
-      <groupId>javax</groupId>
-      <artifactId>javaee-api</artifactId>
-      <version>8.0</version>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+      <version>2.1.1</version>
     </dependency>
     <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.4</version>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.json</artifactId>
+      <version>1.0.4</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -139,11 +141,6 @@
       <artifactId>mockito-core</artifactId>
       <version>2.23.4</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish</groupId>
-      <artifactId>javax.json</artifactId>
-      <version>1.0.4</version>
     </dependency>
   </dependencies>
 

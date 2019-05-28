@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseContext;
@@ -17,11 +16,10 @@ import javax.ws.rs.core.Response;
 
 /**
  * Authorizes a JAX-RS client against a service using OAuth2.
- * @author Tobias Waslowski
  */
-
 public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilter {
 
+  private static final long EXPIRES_IMMEDIATELY = 0L;
   private Optional<Long> tokenLifetimeInSeconds;
   private LocalDateTime accessTokenExpires;
   private Client client;
@@ -45,7 +43,7 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
    * Filters the service's responses; if the service responds with a 401 UNAUTHORIZED,
    * e.g. because the session was manually reset, the access token is reset.
    * @param requestContext The request context; not used in this function.
-   * @param responseContext The service's response context, including the Reponse code.
+   * @param responseContext The service's response context, including the response code.
    */
   @Override
   public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {
@@ -74,7 +72,8 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
       form.param("client_id", clientId);
       form.param("client_secret", clientSecret);
 
-      LocalDateTime timestamp = LocalDateTime.now().plusSeconds(tokenLifetimeInSeconds.orElse(0L));
+      LocalDateTime timestamp = LocalDateTime.now().plusSeconds(tokenLifetimeInSeconds.orElse(
+          EXPIRES_IMMEDIATELY));
 
       Response response = client.target(loginUrl)
           .request()
@@ -146,6 +145,12 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
 
     public OAuthTokenFilter build() {
       return filter;
+    }
+  }
+
+  public class AccessTokenNotAvailableException extends RuntimeException {
+    public AccessTokenNotAvailableException(String message) {
+      super(message);
     }
   }
 }
