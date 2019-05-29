@@ -5,9 +5,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <name>${project.groupId}:${project.artifactId}</name>
-  <groupId>de.otto.oauthtokenfilter</groupId>
+  <groupId>de.otto</groupId>
   <artifactId>oauth-token-filter</artifactId>
-  <version>1.0</version>
+  <version>1.0.2</version>
   <packaging>jar</packaging>
 
   <developers>
@@ -41,7 +41,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.5</version>
+        <version>1.6</version>
         <executions>
           <execution>
             <id>sign-artifacts</id>
@@ -55,12 +55,12 @@
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.7</version>
+        <version>1.6.8</version>
         <extensions>true</extensions>
         <configuration>
           <serverId>otto-de</serverId>
           <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+          <autoReleaseAfterClose>false</autoReleaseAfterClose>
         </configuration>
       </plugin>
       <plugin>
