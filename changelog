@@ -1,0 +1,21 @@
+# Changelog
+ALL notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.3]
+### Added
+- This changelog
+
+### Changed
+- Made the org.glassfish.javax.json dependency optional so it isn't inherited
+to projects using this project as a dependency after getting dependency-conflicts
+in the createObjectBuilder() function.
+
+## [1.0.0]
+### Added
+- Basic functionality
+- README
+- License
+- Unit tests
