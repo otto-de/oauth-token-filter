@@ -3,6 +3,12 @@ ALL notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.1.0]
+### Added
+- Support for "expires_in" field in OAuth2-tokens
+- Support for "refresh_token" field in OAuth2-tokens
+- Authorization using refresh tokens
+- Unit tests
 
 ## [1.0.3]
 ### Added

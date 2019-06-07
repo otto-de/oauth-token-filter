@@ -16,8 +16,10 @@ import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
@@ -36,12 +38,14 @@ public class OAuthTokenFilterTest {
   private static final JsonObject DUMMY_JSON = createObjectBuilder()
       .add("access_token", DUMMY_ACCESS_TOKEN)
       .build();
+  private static final String DUMMY_REFRESH_TOKEN = "dummyRefreshToken";
   private static final String DUMMY_USERNAME = "dummyUsername";
   private static final String DUMMY_LOGIN_URL = "http://dummyLoginUrl";
   private static final String DUMMY_PASSWORD = "dummyPassword";
   private static final String DUMMY_CLIENT_ID = "dummyClientId";
   private static final String DUMMY_CLIENT_SECRET = "dummyClientSecret";
   private static final Long DUMMY_TOKEN_LIFETIME = 7200L;
+  private static final int NUMBER_OF_CREDENTIALS = 5;
 
   @Mock
   private Client client;
@@ -59,6 +63,9 @@ public class OAuthTokenFilterTest {
   private MultivaluedMap<String, Object> headers;
   @Captor
   private ArgumentCaptor<String> authHeader;
+
+  @Captor
+  private ArgumentCaptor<Entity<Form>> formCaptor;
 
   private OAuthTokenFilter testee;
 
@@ -112,13 +119,15 @@ public class OAuthTokenFilterTest {
 
   @Test
   public void shouldUseStoredToken() {
-    given(response.readEntity(JsonObject.class)).willReturn(DUMMY_JSON, Json.createObjectBuilder().build());
+    given(response.readEntity(JsonObject.class)).willReturn(DUMMY_JSON,
+        Json.createObjectBuilder().build());
     given(requestContext.getHeaders()).willReturn(headers);
     testee.filter(requestContext);
 
     testee.filter(requestContext);
 
-    BDDMockito.then(headers).should(times(2)).add(eq("Authorization"), authHeader.capture());
+    BDDMockito.then(headers).should(times(2)).add(
+        eq("Authorization"), authHeader.capture());
     then(authHeader.getAllValues()).allMatch(i -> ("Bearer " + DUMMY_ACCESS_TOKEN).equals(i));
   }
 
@@ -134,7 +143,8 @@ public class OAuthTokenFilterTest {
     invalidateToken();
     testee.filter(requestContext); //Gets a fresh token
 
-    BDDMockito.then(headers).should(times(2)).add(eq("Authorization"), authHeader.capture());
+    BDDMockito.then(headers).should(times(2)).add(
+        eq("Authorization"), authHeader.capture());
     then(authHeader.getValue()).isEqualTo("Bearer newtoken");
   }
 
@@ -143,18 +153,66 @@ public class OAuthTokenFilterTest {
   }
 
   @Test
-  public void shouldUseDefaultTokenLifetime() {
+  public void shouldCreateTokenThatExpiresImmediately() {
     JsonObject oauth2TokenWithZeroTokenLifetime = createObjectBuilder()
         .add("expires_in", 0)
         .add("access_token", "newtoken")
         .build();
-    given(response.readEntity(JsonObject.class)).willReturn(oauth2TokenWithZeroTokenLifetime);
+    given(response.readEntity(JsonObject.class)).willReturn(oauth2TokenWithZeroTokenLifetime, DUMMY_JSON);
     given(requestContext.getHeaders()).willReturn(headers);
     testee.filter(requestContext);
 
     testee.filter(requestContext);
 
-    BDDMockito.then(headers).should(times(2)).add(eq("Authorization"), authHeader.capture());
-    then(authHeader.getAllValues()).allMatch(token -> token.equals("Bearer newtoken"));
+    BDDMockito.then(headers).should(times(2)).add(
+        eq("Authorization"), authHeader.capture());
+    then(authHeader.getAllValues().get(0)).isNotEqualTo(authHeader.getAllValues().get(1));
+  }
+
+  @Test
+  public void shouldCreateTokenThatExpiresWithinFiveSeconds() {
+    JsonObject oauth2TokenWithFiveSecondLifetime = createObjectBuilder()
+        .add("expires_in", 5)
+        .add("access_token", "newtoken")
+        .build();
+    given(response.readEntity(JsonObject.class)).willReturn(oauth2TokenWithFiveSecondLifetime);
+    given(requestContext.getHeaders()).willReturn(headers);
+    testee.filter(requestContext);
+
+    testee.filter(requestContext);
+
+    BDDMockito.then(headers).should(times(2)).add(
+        eq("Authorization"), authHeader.capture());
+    then(authHeader.getAllValues()).allMatch(token -> "Bearer newtoken".equals(token));
+  }
+
+  @Test
+  public void shouldAuthenticateUsingRefreshToken() {
+    JsonObject oauth2TokenWithRefreshToken = createObjectBuilder()
+        .add("refresh_token", "dummyRefreshToken")
+        .add("expires_in", 0)
+        .add("access_token", DUMMY_REFRESH_TOKEN)
+        .build();
+    given(response.readEntity(JsonObject.class)).willReturn(oauth2TokenWithRefreshToken);
+    given(requestContext.getHeaders()).willReturn(headers);
+    testee.filter(requestContext);
+
+    testee.filter(requestContext);
+
+    BDDMockito.then(builder).should(times(2)).post(formCaptor.capture());
+    then(formCaptor.getValue().getEntity().asMap().getFirst("refresh_token")).isEqualTo(DUMMY_REFRESH_TOKEN);
+  }
+
+  @Test
+  public void shouldAuthenticateUsingCredentials() {
+    given(requestContext.getHeaders()).willReturn(headers);
+    given(response.readEntity(JsonObject.class)).willReturn(DUMMY_JSON);
+
+    testee.filter(requestContext);
+
+    BDDMockito.then(builder).should().post(formCaptor.capture());
+    then(formCaptor.getValue().getEntity().asMap().getFirst("username")).isEqualTo(DUMMY_USERNAME);
+    then(formCaptor.getValue().getEntity().asMap().getFirst("password")).isEqualTo(DUMMY_PASSWORD);
+    then(formCaptor.getValue().getEntity().asMap().keySet().size()).isEqualTo(NUMBER_OF_CREDENTIALS);
   }
 }
