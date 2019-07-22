@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/TobiasWaslowski/oauth-token-filter.svg?branch=master)](https://travis-ci.org/TobiasWaslowski/oauth-token-filter)
+
 # OAuthTokenFilter
 
 The OAuthTokenFilter is a JAX-RS client filter that handles OAuth2 authorization. 
