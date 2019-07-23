@@ -101,16 +101,22 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
   }
 
   private void fillFormUsingRefreshToken(Form form) {
-    form.param("grant_type", grant_type);
-    form.param("refresh_token", refreshToken);
+    addParam(form, "grant_type", grant_type);
+    addParam(form, "refresh_token", refreshToken);
   }
 
-  private void fillFormUsingCredentials(Form form) {
-    form.param("grant_type", grant_type);
-    form.param("username", username);
-    form.param("password", password);
-    form.param("client_id", clientId);
-    form.param("client_secret", clientSecret);
+  void fillFormUsingCredentials(Form form) {
+    addParam(form, "grant_type", grant_type);
+    addParam(form, "username", username);
+    addParam(form, "password", password);
+    addParam(form, "client_id", clientId);
+    addParam(form, "client_secret", clientSecret);
+  }
+
+  void addParam(Form form, String key, String value) {
+    if (value != null && !value.isEmpty()) {
+      form.param(key, value);
+    }
   }
 
   private boolean isTokenValid() {
@@ -182,9 +188,6 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
     }
 
     public OAuthTokenFilter build() {
-      if (filter.client == null) {
-        filter.client = ClientBuilder.newBuilder().build();
-      }
       if (filter.grant_type == null) {
         filter.grant_type = "password";
       }
@@ -198,4 +201,3 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
     }
   }
 }
-

@@ -217,4 +217,17 @@ public class OAuthTokenFilterTest {
     then(formCaptor.getValue().getEntity().asMap().getFirst("password")).isEqualTo(DUMMY_PASSWORD);
     then(formCaptor.getValue().getEntity().asMap().keySet().size()).isEqualTo(NUMBER_OF_CREDENTIALS);
   }
+
+  @Test
+  public void shouldReturnAFormWithoutUsernameAndPassword() {
+    testee = OAuthTokenFilter.builder()
+        .clientSecret(DUMMY_CLIENT_SECRET)
+        .clientId(DUMMY_CLIENT_ID)
+        .build();
+    Form form = new Form();
+
+    testee.fillFormUsingCredentials(form);
+    then(form.asMap().get("username")).isEqualTo(null);
+    then(form.asMap().get("password")).isEqualTo(null);
+  }
 }
