@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseContext;
@@ -175,6 +176,9 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
     }
 
     public OAuthTokenFilter build() {
+      if (filter.client == null) {
+        filter.client = ClientBuilder.newBuilder().build();
+      }
       return filter;
     }
   }
