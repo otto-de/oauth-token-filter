@@ -31,6 +31,7 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
   private String loginUrl;
   private String accessToken;
   private String refreshToken;
+  private String grant_type;
 
   /**
    * Filters outgoing requests, adding an OAuth2-Token to the header.
@@ -100,12 +101,12 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
   }
 
   private void fillFormUsingRefreshToken(Form form) {
-    form.param("grant_type", "password");
+    form.param("grant_type", grant_type);
     form.param("refresh_token", refreshToken);
   }
 
   private void fillFormUsingCredentials(Form form) {
-    form.param("grant_type", "password");
+    form.param("grant_type", grant_type);
     form.param("username", username);
     form.param("password", password);
     form.param("client_id", clientId);
@@ -175,9 +176,17 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
       return this;
     }
 
+    public OAuthTokenFilterBuilder grant_type (String grant_type) {
+      filter.grant_type = grant_type;
+      return this;
+    }
+
     public OAuthTokenFilter build() {
       if (filter.client == null) {
         filter.client = ClientBuilder.newBuilder().build();
+      }
+      if (filter.grant_type == null) {
+        filter.grant_type = "password";
       }
       return filter;
     }

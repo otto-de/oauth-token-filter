@@ -46,6 +46,7 @@ public class OAuthTokenFilterTest {
   private static final String DUMMY_CLIENT_SECRET = "dummyClientSecret";
   private static final Long DUMMY_TOKEN_LIFETIME = 7200L;
   private static final int NUMBER_OF_CREDENTIALS = 5;
+  private static final String DUMMY_GRANT_TYPE = "dummyGrantType";
 
   @Mock
   private Client client;
@@ -82,6 +83,7 @@ public class OAuthTokenFilterTest {
         .clientSecret(DUMMY_CLIENT_SECRET)
         .loginUrl(DUMMY_LOGIN_URL)
         .tokenLifetimeInSeconds(DUMMY_TOKEN_LIFETIME)
+        .grant_type(DUMMY_GRANT_TYPE)
         .build();
   }
 
