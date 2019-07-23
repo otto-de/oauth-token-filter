@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/TobiasWaslowski/oauth-token-filter.svg?branch=master)](https://travis-ci.org/TobiasWaslowski/oauth-token-filter)
+
 # OAuthTokenFilter
 
 The OAuthTokenFilter is a JAX-RS client filter that handles OAuth2 authorization. 
@@ -16,9 +18,8 @@ To include the OAuthTokenFilter in your project, simply add it as a Maven Depend
     <dependency>
       <groupId>de.otto.oauthtokenfilter</groupId>
       <artifactId>oauth-token-filter</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
     </dependency>
-
 
 ### Initial Configuration
 

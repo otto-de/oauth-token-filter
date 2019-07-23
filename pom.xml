@@ -7,7 +7,7 @@
   <name>${project.groupId}:${project.artifactId}</name>
   <groupId>de.otto</groupId>
   <artifactId>oauth-token-filter</artifactId>
-  <version>1.0.2</version>
+  <version>1.1.1</version>
   <packaging>jar</packaging>
 
   <developers>
@@ -45,7 +45,7 @@
         <executions>
           <execution>
             <id>sign-artifacts</id>
-            <phase>package</phase>
+            <phase>deploy</phase>
             <goals>
               <goal>sign</goal>
             </goals>
@@ -123,6 +123,7 @@
       <groupId>org.glassfish</groupId>
       <artifactId>javax.json</artifactId>
       <version>1.0.4</version>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

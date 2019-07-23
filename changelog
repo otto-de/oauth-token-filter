@@ -1,0 +1,38 @@
+# Changelog
+ALL notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.1.1]
+### Changed
+- Corrected the logic for filling out forms. Now, when you do not provide the OAuthTokenFilter
+with a Username or Password, it will not enter them into the form as "null"
+- The Builder class now correctly builds a new client if you do not provide it with one.
+- You are now able to change the grant_type parameter for more flexibility. If none is provided,
+it defaults to password.
+
+### Added
+- Unit test to reflect the correct way of filling out forms with null values.
+
+## [1.1.0]
+### Added
+- Support for "expires_in" field in OAuth2-tokens
+- Support for "refresh_token" field in OAuth2-tokens
+- Authorization using refresh tokens
+- Unit tests
+
+## [1.0.3]
+### Added
+- This changelog
+
+### Changed
+- Made the org.glassfish.javax.json dependency optional so it isn't inherited
+to projects using this project as a dependency after getting dependency-conflicts
+in the createObjectBuilder() function.
+
+## [1.0.0]
+### Added
+- Basic functionality
+- README
+- License
+- Unit tests

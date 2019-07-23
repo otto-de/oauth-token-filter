@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseContext;
@@ -29,6 +30,8 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
   private String clientSecret;
   private String loginUrl;
   private String accessToken;
+  private String refreshToken;
+  private String grant_type;
 
   /**
    * Filters outgoing requests, adding an OAuth2-Token to the header.
@@ -49,7 +52,7 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
   public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {
     Response.StatusType statusInfo = responseContext.getStatusInfo();
     if (statusInfo.equals(UNAUTHORIZED)) {
-      forceRefreshToken();
+      resetAccessToken();
     }
   }
 
@@ -66,11 +69,11 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
       return accessToken;
     } else {
       Form form = new Form();
-      form.param("grant_type", "password");
-      form.param("username", username);
-      form.param("password", password);
-      form.param("client_id", clientId);
-      form.param("client_secret", clientSecret);
+      if(refreshToken != null) {
+        fillFormUsingRefreshToken(form);
+      } else {
+        fillFormUsingCredentials(form);
+      }
 
       LocalDateTime timestamp = LocalDateTime.now().plusSeconds(tokenLifetimeInSeconds.orElse(
           EXPIRES_IMMEDIATELY));
@@ -80,20 +83,50 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
           .post(Entity.form(form));
 
       JsonObject json = response.readEntity(JsonObject.class);
+
+      if(hasExpirationTime(json)) {
+        timestamp = LocalDateTime.now().plusSeconds(
+            json.getJsonNumber("expires_in").longValue());
+      }
+
       accessToken = Optional.ofNullable(json.getString("access_token", null))
           .orElseThrow(() -> new AccessTokenNotAvailableException(
               "No access token provided in response:" + json));
+      if(hasRefreshToken(json)) {
+        refreshToken = json.getString("refresh_token");
+      }
       accessTokenExpires = timestamp;
     }
     return accessToken;
+  }
+
+  private void fillFormUsingRefreshToken(Form form) {
+    form.param("grant_type", grant_type);
+    form.param("refresh_token", refreshToken);
+  }
+
+  private void fillFormUsingCredentials(Form form) {
+    form.param("grant_type", grant_type);
+    form.param("username", username);
+    form.param("password", password);
+    form.param("client_id", clientId);
+    form.param("client_secret", clientSecret);
   }
 
   private boolean isTokenValid() {
     return accessToken != null && LocalDateTime.now().isBefore(accessTokenExpires);
   }
 
-  private void forceRefreshToken() {
+  private void resetAccessToken() {
     accessTokenExpires = LocalDateTime.now();
+  }
+
+  private boolean hasRefreshToken(JsonObject token) {
+    return token.getString("refresh_token", null) != null;
+  }
+
+  private boolean hasExpirationTime(JsonObject token) {
+    return token.getJsonNumber("expires_in") != null;
   }
 
   /**
@@ -143,7 +176,18 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
       return this;
     }
 
+    public OAuthTokenFilterBuilder grant_type (String grant_type) {
+      filter.grant_type = grant_type;
+      return this;
+    }
+
     public OAuthTokenFilter build() {
+      if (filter.client == null) {
+        filter.client = ClientBuilder.newBuilder().build();
+      }
+      if (filter.grant_type == null) {
+        filter.grant_type = "password";
+      }
       return filter;
     }
   }
