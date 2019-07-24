@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseContext;
@@ -30,6 +31,7 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
   private String loginUrl;
   private String accessToken;
   private String refreshToken;
+  private String grant_type;
 
   /**
    * Filters outgoing requests, adding an OAuth2-Token to the header.
@@ -99,16 +101,22 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
   }
 
   private void fillFormUsingRefreshToken(Form form) {
-    form.param("grant_type", "password");
-    form.param("refresh_token", refreshToken);
+    addParam(form, "grant_type", grant_type);
+    addParam(form, "refresh_token", refreshToken);
   }
 
-  private void fillFormUsingCredentials(Form form) {
-    form.param("grant_type", "password");
-    form.param("username", username);
-    form.param("password", password);
-    form.param("client_id", clientId);
-    form.param("client_secret", clientSecret);
+  void fillFormUsingCredentials(Form form) {
+    addParam(form, "grant_type", grant_type);
+    addParam(form, "username", username);
+    addParam(form, "password", password);
+    addParam(form, "client_id", clientId);
+    addParam(form, "client_secret", clientSecret);
+  }
+
+  private void addParam(Form form, String key, String value) {
+    if (value != null && !value.isEmpty()) {
+      form.param(key, value);
+    }
   }
 
   private boolean isTokenValid() {
@@ -174,7 +182,15 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
       return this;
     }
 
+    public OAuthTokenFilterBuilder grant_type (String grant_type) {
+      filter.grant_type = grant_type;
+      return this;
+    }
+
     public OAuthTokenFilter build() {
+      if (filter.grant_type == null) {
+        filter.grant_type = "password";
+      }
       return filter;
     }
   }
@@ -185,4 +201,3 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
     }
   }
 }
-

@@ -46,6 +46,7 @@ public class OAuthTokenFilterTest {
   private static final String DUMMY_CLIENT_SECRET = "dummyClientSecret";
   private static final Long DUMMY_TOKEN_LIFETIME = 7200L;
   private static final int NUMBER_OF_CREDENTIALS = 5;
+  private static final String DUMMY_GRANT_TYPE = "dummyGrantType";
 
   @Mock
   private Client client;
@@ -82,6 +83,7 @@ public class OAuthTokenFilterTest {
         .clientSecret(DUMMY_CLIENT_SECRET)
         .loginUrl(DUMMY_LOGIN_URL)
         .tokenLifetimeInSeconds(DUMMY_TOKEN_LIFETIME)
+        .grant_type(DUMMY_GRANT_TYPE)
         .build();
   }
 
@@ -214,5 +216,18 @@ public class OAuthTokenFilterTest {
     then(formCaptor.getValue().getEntity().asMap().getFirst("username")).isEqualTo(DUMMY_USERNAME);
     then(formCaptor.getValue().getEntity().asMap().getFirst("password")).isEqualTo(DUMMY_PASSWORD);
     then(formCaptor.getValue().getEntity().asMap().keySet().size()).isEqualTo(NUMBER_OF_CREDENTIALS);
+  }
+
+  @Test
+  public void shouldReturnAFormWithoutUsernameAndPassword() {
+    testee = OAuthTokenFilter.builder()
+        .clientSecret(DUMMY_CLIENT_SECRET)
+        .clientId(DUMMY_CLIENT_ID)
+        .build();
+    Form form = new Form();
+
+    testee.fillFormUsingCredentials(form);
+    then(form.asMap().get("username")).isEqualTo(null);
+    then(form.asMap().get("password")).isEqualTo(null);
   }
 }
