@@ -16,6 +16,7 @@ it defaults to "password".
 
 ### Added
 - Unit test to reflect the correct way of filling out forms with null values.
+- A .travis.yml file that runs unit tests on the repository
 
 ## [1.1.0]
 ### Added

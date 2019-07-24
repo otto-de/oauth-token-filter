@@ -113,7 +113,7 @@ public class OAuthTokenFilter implements ClientRequestFilter, ClientResponseFilt
     addParam(form, "client_secret", clientSecret);
   }
 
-  void addParam(Form form, String key, String value) {
+  private void addParam(Form form, String key, String value) {
     if (value != null && !value.isEmpty()) {
       form.param(key, value);
     }
