@@ -18,7 +18,7 @@ To include the OAuthTokenFilter in your project, simply add it as a Maven Depend
     <dependency>
       <groupId>de.otto.oauthtokenfilter</groupId>
       <artifactId>oauth-token-filter</artifactId>
-      <version>1.0.3</version>
+      <version>2.0.0</version>
     </dependency>
 
 ### Initial Configuration
