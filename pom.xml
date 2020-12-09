@@ -7,7 +7,7 @@
   <name>${project.groupId}:${project.artifactId}</name>
   <groupId>de.otto</groupId>
   <artifactId>oauth-token-filter</artifactId>
-  <version>2.0.0</version>
+  <version>2.0.1</version>
   <packaging>jar</packaging>
 
   <properties>
@@ -38,6 +38,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
         <configuration>
           <source>8</source>
           <target>8</target>
