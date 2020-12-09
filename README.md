@@ -26,7 +26,7 @@ To include the OAuthTokenFilter in your project, simply add it as a Maven Depend
 Upon using your ClientBuilder, call 
 
     import de.otto.oauthtokenfilter.OAuthTokenFilter;
-    import javax.ws.rs.client.ClientBuilder;
+    import jakarta.ws.rs.client.ClientBuilder;
     ...
 
     ClientBuilder.newBuilder()
