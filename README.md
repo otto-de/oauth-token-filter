@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/otto-de/oauth-token-filter.svg?branch=master)](https://travis-ci.com/otto-de/oauth-token-filter)
+![Build](https://github.com/otto-de/oauth-token-filter/workflows/Build/badge.svg)
 
 # OAuthTokenFilter
 
