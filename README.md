@@ -1,4 +1,4 @@
-![Build](https://github.com/otto-de/oauth-token-filter/workflows/Build/badge.svg)
+[![Build](https://github.com/otto-de/oauth-token-filter/workflows/Build/badge.svg)](https://github.com/otto-de/oauth-token-filter/actions?query=workflow%3ABuild)
 
 # OAuthTokenFilter
 
